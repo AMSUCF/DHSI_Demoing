@@ -4,13 +4,20 @@ let speedX;
 let direction = 1;
 let isMoving = false;
 
+let velocityY = 0;
+let gravity = 0.3;
+let jumpStrength = -8;
+let groundLevel;
+let isOnGround = true;
+
 let trail = [];
 let clouds = [];
 
 function setup() {
   createCanvas(windowWidth, windowHeight);
   pelicanX = width / 2; // Start in center
-  pelicanY = height * 0.7;
+  groundLevel = height * 0.7;
+  pelicanY = groundLevel;
   speedX = 3;
 
   // Create initial clouds
@@ -41,6 +48,9 @@ function draw() {
 
   // Handle user input
   handleMovement();
+
+  // Apply gravity and jumping physics
+  handlePhysics();
 
   // Add trail puff only when moving
   if (isMoving) {
@@ -96,6 +106,27 @@ function handleMovement() {
     pelicanX += speedX;
     direction = 1; // face right
     isMoving = true;
+  }
+  
+  // Check for spacebar to jump
+  if (keyIsDown(32) && isOnGround) { // 32 is spacebar keyCode
+    velocityY = jumpStrength;
+    isOnGround = false;
+  }
+}
+
+function handlePhysics() {
+  // Apply gravity
+  velocityY += gravity;
+  
+  // Update vertical position
+  pelicanY += velocityY;
+  
+  // Check ground collision
+  if (pelicanY >= groundLevel) {
+    pelicanY = groundLevel;
+    velocityY = 0;
+    isOnGround = true;
   }
 }
 
